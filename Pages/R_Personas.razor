@@ -1,0 +1,124 @@
+﻿@page "/Personas"
+
+@using Prestamo.BLL
+@using Prestamo.Models
+
+@*@inject IToastService Toast*@
+
+<EditForm Model="persona" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
+            <h3>Registro de Persona</h3>
+        </div>
+        <div class="card-body">
+            <form>
+                <div class="form-row align-items-center">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Persona Id</label>
+                            <div class="input-group">
+                                <InputNumber @bind-Value="persona.PersonaId" class="form-control col-4" />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-primary input-group-text" @onclick="Buscar">Buscar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @*Nombres*@
+                <div class="form-group">
+                    <label>Nombres</label>
+                    <InputText @bind-Value="persona.Nombres" class="form-control" />
+                    <ValidationMessage For="@(() => persona.Nombres)" />
+                </div>
+
+
+                @*Cedula*@
+                <div class="form-group">
+                    <label>Cédula</label>
+                    <InputText @bind-Value="persona.Cedula" class="form-control" />
+                    <ValidationMessage For="@(() => persona.Cedula)" />
+                </div>
+
+
+                @*FechaNacimiento*@
+                <div class="form-group">
+                    <label>Fecha Nacimiento</label>
+                    <InputDate @bind-Value="persona.FechaNacimiento" class="form-control" />
+                    <ValidationMessage For="@(() => persona.FechaNacimiento)" />
+                </div>
+
+                @*Balance*@
+                <div class="form-group">
+                    <label>Balance</label>
+                    <InputNumber @bind-Value="persona.Balance" class="form-control" />
+                </div>
+            </form>
+        </div>
+        <div class="card-footer">
+            <div class="form-group text-center" display: inline-block>
+                <button type="button" class="btn btn-lg btn-primary" @onclick="Nuevo">Nuevo</button>
+                <button type="submit" class="btn btn-lg btn-success">Guardar</button>
+                <button type="button" class="btn btn-lg btn-danger" @onclick="Eliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    [Inject]
+    public PersonasBLL personasBLL { get; set; }
+
+    private Personas persona = new Personas();
+
+    private void Nuevo()
+    {
+        persona = new Personas();
+    }
+
+    private void Buscar()
+    {
+        if (persona.PersonaId > 0)
+        {
+            var Persona = personasBLL.Buscar(persona.PersonaId);
+
+            if (Persona != null)
+                this.persona = Persona;
+            //else
+            //Toast.ShowError("Persona no encontrada");
+        }
+    }
+
+    private void Guardar()
+    {
+        bool Guardado;
+
+        Guardado = personasBLL.Guardar(persona);
+
+        if (Guardado)
+        {
+            Nuevo();
+            //Toast.ShowSuccess("Guardado correctamente");
+        }
+        //else
+        //Toast.ShowError("No fue posible guardar");
+    }
+
+    private void Eliminar()
+    {
+        bool Eliminado;
+
+        Eliminado = personasBLL.Eliminar(persona.PersonaId);
+
+        if (Eliminado)
+        {
+            Nuevo();
+            //Toast.ShowSuccess("Eliminado correctamente");
+        }
+        //else
+        //Toast.ShowError("No fue posible eliminar");
+    }
+}
